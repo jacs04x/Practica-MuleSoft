@@ -1,3 +1,5 @@
+<img src="http://drive.google.com/uc?export=view&id=1g1pcyHMPRAb13PgysLl5uDvVv2OhYPBG" align="right" />
+
 # Practica MuleSoft 
 
 ### Jonatan Alejandro Castro Mejia
@@ -212,7 +214,7 @@ Y verificamos la respuesta ¡Listo!
 ```
 ![](resp2.png)
 
-# Como Configurar un endpoint con protocolo HTTPS en Anypoint Studio.
+# b) Como Configurar un endpoint con protocolo HTTPS en Anypoint Studio.
 
 ```markdown
 1. Nos dirigimos a la carpeta src/main/resources y creamos un archivo(click derecho -> new -> File) con el nombre: local.properties
@@ -347,14 +349,16 @@ En TLS Configuration cambiamos de None a Edit Inline y nos aparecerán los campo
 Y ¡Listo! la conexión ahora tendrá un protocolo HTTPS 
 
 ```markdown
-19. Probemos la conexión en Postman (ejecutando el proyecto en Anypoint Studio antes) Verificamos que la configuracion de Postman
+19. Probemos la conexión en Postman (ejecutando el proyecto en Anypoint Studio antes) Verificamos que en la configuracion de Postman
 ```
 ![](pos3.png)
-este desactivado
+
+esta opción este desactivada
 
 ![](post4.png)
 
-Ahora ingresamos https://0.0.0.0:8082/hellomule
+Ahora ingresamos a https://0.0.0.0:8082/hellomule
+
 ![](post2.png)
 
 damos Click en Send
@@ -365,17 +369,168 @@ y vemos que la respuesta es correcta para ese endpoint.
 
 ¡Listo! Terminamos de verificar que la conexión ahora tiene protocolo https.
 
-<img src="http://drive.google.com/uc?export=view&id=1g1pcyHMPRAb13PgysLl5uDvVv2OhYPBG" align="right" />
+
+# C) ¿Cómo configurar un protocolo HTTPS para todos los endpoints? (De forma global y no para cada uno)
+
+```markdown 
+1. Abrimos nuestro archivo local.properties con Mule Properties Editor.
+
+2. ingresamos lo siguiente:
+
+salesforceUsername=<yourUsername>
+salesforcePassword=<yourPassword>
+
+<> debes de modificarlo con tus datos que refistraste anteriormente
+
+```
+
+[link con guía de instalación de Mule Properties Editor](https://mulesy.com/adding-secure-property-plugin-or-editor/)
+
+```markdown 
+4. Ahora dentro de la paleta presionamos la opción "Search in Exchange", se abrirá una ventana como la siguiente:
+```
+![](search.png)
+
+```markdown
+5. Buscamos Mule Secure Configuration Property Extension, la seleccionamos y presionamos Add> y despues Finish
+```
+![](add.png)
+
+```markdown
+6. Veremos que se agregara a los elementos dentro la Paleta de mule y en los paquetes
+```
+
+![](secure.png)
+![](secure2.png)
+
+```markdown
+7. Ahora nos dirigimos a la sección de elementos globales, presionamos el botón de create 
+```
+![](globale.png)
+
+```markdown
+8. Escribimos la palabra global y Seleccionamos la opción "Global Property" y Presionamos "OK"
+```
+![](global2.png)
+
+```markdown
+9. Ahora se abrira una ventana como la siguiente:
+```
+![](securekey.png)
 
 
 
+```markdown
+10. Aqui ingresaremos los algunos datos que tendremos que recordar 
+
+Por ejemplo yo agregue: 
+
+* Name : secure-key
+* Value: MulesoftValue
+
+Y presionamos "OK"
+```
+![](datos.png)
+
+Ahora será un elemento global
+
+![](global3.png)
+
+```markdown
+11. Preisonamos el botón de Create y buscamos "Secure Properties Config", lo seleccionamos y presionamos "OK"
+```
+
+![](secureconf.png)
 
 
+Se abrirá la siguiente ventana: 
+
+![](secureconf2.png)
+
+```markdown
+12. Llenamos los campos (o seleccionamos)
+
+* File
+* Key
+* Algorithm
 
 
+```
+![](secureconf3.png)
 
+Y presionamos "OK"
 
+```markdown
+13. Ahora buscaremos una dependencia para agregarla a los elementos de la paleta, esta será "Salesforce Connector" lo agregamos y presionamos "Finish"
+```
+![](sales.png)
 
+Anteriormente definimos una respuesta con Set Playload, y ahora lo que haremos es cambiarlo por un elemento de Salesforce, en este caso lo cambiaremos por un elemento "Create"
 
+![](playload.png)
 
+![](create.png)
 
+```markdown
+14. Reemplazamos Set Playload con Create.
+```
+![](create2.png)
+
+```markdown
+15. Presionamos el elemento Create dentro del flujo y aparecera su configuración.
+```
+![](createconf.png)
+
+```markdown
+16. Presionamos el botón @icon-plus dentro de Basic Settings, se abrirá una ventana y agregaremos los siguientes datos: 
+
+En Username: $(secure::salesforceUserName)
+En Password: $(secure::salesforcePassword)
+
+Y presionamos "OK"
+```
+![](salesconfig.png)
+
+```markdown
+17. Después en la cofiguración de Create, en la Sección General modificamos lo siguiente:
+
+* Type: lead
+* Records:
+
+%dw 2.0
+output application/json
+---
+[{
+	FirstName: "Max",
+	LastName: "Mule",
+	Email: "maxthemule@mulesoft.com",
+	Company: "MuleSoft"
+}]
+```
+
+```markdown
+18. nos dirijimos al archivo local.properties y damos doble click en salesforceUserName, después damos click en encrypt
+```
+
+![](mulesoftvalue.png)
+
+Se mostrará una ventana con dos campos, una para elegir un algoritmo de encriptación y la llave que definimos en el paso **10**, al precionar "OK"
+regresaremos y veremos que el username ahora estará encriptado, presionamos "OK"
+
+![](encriptado1.png)
+
+```markdown
+19. Repetimos con el password.
+```
+
+![](encriptado2.png)
+
+```markdown
+20. Ahora hay que desplegar el proyecto en CloudHub, Agregando el nombre y la llave de seguridad del paso 10.
+```
+
+![](cloud2.png)
+
+ya en el navegador, podremos observar que se actualizo!
+
+![](act.png)
