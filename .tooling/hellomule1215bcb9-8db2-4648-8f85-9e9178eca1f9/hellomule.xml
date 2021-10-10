@@ -6,7 +6,10 @@
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd">
 	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="31a8e070-7e5c-4dca-ba68-8c8443a0b0e5" >
-		<http:listener-connection host="0.0.0.0" port="8082" protocol="HTTPS">
+		<http:listener-connection host="0.0.0.0" port="$(https.port)" protocol="HTTPS">
+			<tls:context >
+				<tls:key-store path="keystore-name.jks" alias=" key-alias" keyPassword="password" password="password" />
+			</tls:context>
 			<tls:context >
 				<tls:key-store path="keystore-name.jks" alias=" key-alias" keyPassword="password" password="password" />
 			</tls:context>

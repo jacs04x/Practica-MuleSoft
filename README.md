@@ -4,7 +4,7 @@
 
 Guia de Uso e instalación de MuleSoft.
 
-## Registro e Instalación
+## A) Registro e Instalación
 
 ```markdown
 1. Crear una cuenta en Mulesoft 
@@ -34,7 +34,7 @@ Guia de Uso e instalación de MuleSoft.
 
 <img src="http://drive.google.com/uc?export=view&id=1w2u03RyxMVkbLv6mBTM49hagf172BbO3" />  
 
-## Creacion de un nuevo proyecto Mule
+## B) Creacion de un nuevo proyecto Mule
 ```markdown
 1. Presionamos "Create a Mule Proyect"
 ```
@@ -83,7 +83,7 @@ Ahora veremos que el nombre que asignamos, aparece en el campo de "Connector con
 ```
 
 ```markdown
-Ahora lo que sigue es definir la dirección o el "Path"
+Lo que sigue es definir la dirección o el "Path"
 ```
 
 ![](path.png)
@@ -102,7 +102,7 @@ Ahora arrastramos y soltamos el elemento "Set Playload" dentro del flujo.
 ```
 
 ![](playconf.png)
-* Presionamos el boton de fx e ingresamos la cadena "Hello Mule".
+* Presionamos el botón de fx e ingresamos la cadena "Hello Mule".
 
 ![](fx.png)
 
@@ -131,6 +131,239 @@ Haremos una petición POST con la direccion definida en el Listener (http://0.0.
 Al presionar "Send" la respuesta que obtendremos será:
 ```
 ![](res.png)
+
+## Desplegar proyecto Mule en CloudHub.
+
+```markdown
+1. Detenemos la ejecución del proyecto Mule, dando click derecho sobre el flujo y presionando "@icon-stop proyect hellomule"
+```
+
+![](1.png)
+
+```markdown
+2. Damos click derecho sobre el archivo hellomule.xml, luego en Anypoint Platform y seleccionamos Deploy to CloudHub.
+```
+
+```markdown
+3. Nos pedira acceso ya que es por primera vez que tratamos de hacer deploy.
+```
+![](login.png)
+
+```markdown
+4. Una vez que accedemos, se abrirá una ventana como la siguiente:
+```
+![](cloud.png)
+
+Observamos que en la parte superior izquierda tenemos un botón con leyenda "DESING", lo presionamos y cambiamos a SandBox
+
+![](sand.png)
+
+cambiamos a SandBox seleccionándolo y presionando "Switch"
+
+```markdown
+5. pasamos el cursor sobre el nombre de la aplicación
+ * si este tiene @icon-times varificamos el error y lo trataremos de arreglar
+ 
+ En mi caso el nombre del proyecto ya estaba en uso, por eso lo cambie a hellomule100
+
+Esto es importante ya con errores no se podrá desplegar en CloudHub.
+```
+
+![](correct.png)
+
+```markdown
+6. Ahora presionamos "Deploy Application" y obtendremos la siguiente ventana:
+```
+![](dep.png)
+
+```markdown
+7. Presionamos "Open in Browser" y accedemos con nuestra cuenta
+```
+
+![](cuenta.png)
+
+```markdown
+8. Al acceder de forma satisfactorira se nos mostrará la siguiente pestaña, y al igual que antes, presionamos el botón de "Desing" y cambiamos a "Sandbox"
+```
+![](v1.png)
+
+![](deployed.png)
+
+```markdown
+9. Ahora preisonamos el nombre del proyecto "hellomule100" y se nos redireccionará a otra pestaña.
+```
+
+![](domain.png)
+
+En esta pestaña podremos ver, el dominio de nuestro proyecto ya desplegado en CloudHub.
+
+En mi caso es 
+
+[Este link](http://hellomule100.us-e2.cloudhub.io/)
+
+Pero como recordaremos, para verificar la respuesta de la petición que creamos, es necesario acceder desde Postman (para hacer una petición POST)
+
+![](deployedPost.png)
+
+```markdown
+10. Presionamos "Send"
+
+Y verificamos la respuesta ¡Listo!
+```
+![](resp2.png)
+
+# Como Configurar un endpoint con protocolo HTTPS en Anypoint Studio.
+
+```markdown
+1. Nos dirigimos a la carpeta src/main/resources y creamos un archivo(click derecho -> new -> File) con el nombre: local.properties
+
+En este archivo "definiremos" las propiedades de una conexión con protocolo HTTPS
+
+```
+
+![](prop.png)
+
+```markdown
+2. Regresamos al archivo hellomule.xml tendremos lo siguiente
+```
+
+![](test.png)
+```markdown
+3. Seleccionamos HTTP_Listener_config, 
+    * Presionamos Edit
+    * Cambiamos el protocolo por HTTPS y
+    * Modificamos el puerto por $(https.port)
+```
+![](changeport.png)
+
+```markdown
+4. Probamos la conexión y veremos que esta fallará, ya que hay que agregar una configuración global para la conexión. (si continua fallando no hacer el archivo local.properties y simplemente cambiar de puerto a 8082)
+```
+![](testconexion.png)
+
+```markdown
+5. Cerramos las ventanas de prueba de conexión y de edición de la conexión y regresamos al archivo hellomule.xml
+```
+![](reg.png)
+
+```markdown
+6. Presionamos "Create" 
+```
+![](global.png)
+
+Global Configurations -> Configuration properties
+
+![](global1.png)
+
+```markdown
+7. Seleccionamos el archivo que creamos (local.properties) y presionamos "OK"
+```
+![](local.png) @icon-arrow-right
+![](local2.png)
+Presionamos "OK"
+
+Y ahora tendremos otro elemento 
+
+![](elem.png)
+
+```markdown
+8. Regresamos al archivo hellomule.xml, seleccionamos HTTP_listener_config y presionamos edit 
+```
+
+```markdown
+9. Nos dirigimos a la pestaña TLS y cambiaremos la configuracion TLS (de none a EditInline)
+
+Para eso crearemos un archivo keystore (jks)
+```
+![](tls.png)
+```markdown
+10. Abriremos una terminal 
+
+11. Escribimos los siguientes comandos
+
+cd \  ------------------------(para colocarnos en c: )
+dir /b/s keytool.exe ---------(para buscar el archivo ejecutable keytool.exe)
+
+```
+Para una guia completa seguir este [mini tutorial](https://support.code42.com/Administrator/6/Configuring/Install_a_CA-signed_SSL_certificate_for_HTTPS_console_access)
+
+Usaremos el de java.
+
+![](java.png)
+
+
+```markdown
+12. Escribimos el comando 
+PATH=%PATH%;C:\Program Files\Java\jdk-15.0.2\bin 
+
+En mi caso tengo una version de java relativamente reciente, pero puede usar alguna anterior también.
+```
+```markdown
+13. Escribimos el comando cd \Users\<yourusername>
+(cambia yourusername por tu nombre de usuario) 
+```
+```markdown
+14. Ahora escribimos el siguiente comando 
+
+keytool -genkey -alias <key-alias> -keystore <keystore-name>.jks -keyalg RSA -storetype JKS
+
+los elementos dentro de <> los puedes modificar a tu placer.
+```
+![](jks.png)
+```markdown
+Y finalmente obtendremos un archivo .jks dentro de la carpeta \Users\<yourusername>.
+```
+
+```markdown
+15. Ahora hay que mover el archivo.jks a la carpeta src/main/resources dentro del proyecto
+```
+![](mover.png)
+
+```markdown
+16. Regresamos a configurar TLS del Listener. 
+
+En TLS Configuration cambiamos de None a Edit Inline y nos aparecerán los campos para configurar TLS.
+```
+![](lis3.png)
+
+![](gloabaltls.png)
+
+```markdown
+17. Dentro de los campos de Key Store Configuration agregaremos 
+
+* En Path el nombre del archivo que generamos y copiamos a la carpeta src/main/resources 
+* El alias que proporcionamos via terminal (en mi caso key-alias)
+* Y el password (en mi caso password)
+```
+
+![](tlsconfig.png)
+
+```markdown
+18. Probamos la conexión.
+```
+
+![](success.png)
+
+Y ¡Listo! la conexión ahora tendrá un protocolo HTTPS 
+
+```markdown
+19. Probemos la conexión en Postman (ejecutando el proyecto en Anypoint Studio antes) Verificamos que la configuracion de Postman
+```
+![](pos3.png)
+este desactivado
+
+![](post4.png)
+
+Ahora ingresamos https://0.0.0.0:8082/hellomule
+![](post2.png)
+
+damos Click en Send
+
+![](post5.png)
+
+y vemos que la respuesta es correcta para ese endpoint.
+
+¡Listo! Terminamos de verificar que la conexión ahora tiene protocolo https.
 
 <img src="http://drive.google.com/uc?export=view&id=1g1pcyHMPRAb13PgysLl5uDvVv2OhYPBG" align="right" />
 
