@@ -858,3 +858,196 @@ Con lo siguiente sabremos que se importo correctamente:
 14. Bajamos y en el siguiente elemento agregaremos un Listener: 
 ```
 ![](agregar.png)
+
+![](list2.png)
+```markdown
+15. Le asignamos un protocolo HTTPS y el puerto 8082
+```
+
+![](list3.png)
+
+```markdown
+16. Agregamos nuestro archivo JKS en la configuración TLS
+```
+![](list6.png)
+
+![](list4.png)
+```markdown
+17. Le asignamos el Path "/text"
+```
+![](list5.png)
+
+```markdown
+18. Volvemos a entrar a la configuración del Listener y hacemos un test de la conexión.
+```
+![](list7.png)
+
+
+
+```markdown
+19. Ahora creamos una cuenta en Twilio (es un intermediario que ayuda estableciendo comunicaciones, en este caso para mander un SMS)
+```
+[crear cuenta en twilio ->](https://www.twilio.com/try-twilio)
+
+```markdown
+20. _Una vez creada la cuenta de twilio hay que obtner el SID y el Token de Autorización. 
+```
+![](twilio.png)
+
+Para usarlo dentro de este link (el SID)
+
+http://api.twilio.com/2010-04-01/Accounts/YOUR-ACCOUNT-SID-GOES-HERE/Messages.json
+
+```markdown
+21. Ahora hay que agregar un elemento Request y lo configuramos
+
+* Asi quedaría el flujo.
+```
+
+![](request.png)
+
+```markdown
+21. Asignamos un Protocolo HTTP, un host 0.0.0.0 y un puerto 8081, presionamos "OK"
+```
+
+![](http.png)
+
+```markdown
+22. Ahora copiamos le link de twilio con el SID y lo pegamos en el path del Request, y el metodo lo asignamos como POST.
+```
+
+![](path2.png)
+```markdown
+23. Bajamos a la sección de Body y copiamos y pegamos el siguiente texto (el botón fx debe estar marcado)
+```
+
+![](body.png)
+
+```json
+output application/x-www-form-urlencoded
+---
+{
+    "To":payload.ToPhoneNumber,
+    "From": 14085835493,
+    "Body":payload.Message
+}
+```
+
+```markdown
+24. Ahora pasamos a los headers y copiamos y pegamos lo siguiente: 
+
+    Y agregamos el SID y el Token de Autorización de Twilio.
+
+```
+![](headers.png)
+
+```json
+import toBase64 from dw::core::Binaries
+output application/java
+var concat = "ACCOUNT-SID" ++ ":" ++ "AUTH TOKEN"
+var base64 = toBase64(concat)
+---
+{
+	"Authorization" : "Basic " ++ base64
+}
+```
+
+```markdown
+25. Ahora vamos a Anypoint Platform, en la sección de API Administration
+```
+
+![](plat.png)
+
+```markdown
+26. Presionamos el Botón Manage API y seleccionamos Manage API from Exchange
+```
+![](exchange2.png)  
+
+```markdown
+27. Ingresamos el nombre de la API y dejamos todo lo demas como esta. 
+```
+
+![](exchange3.png)
+
+![](exchange4.png)
+
+```markdown
+28. Regresamos a Anypoint studio y vamos a la seccion de Elementos Globales, presionamos el botón de Create y buscamos API Autodiscovery.
+```
+
+![](discovery.png)
+
+Regresamos un momento a Anypoint Platform y vamos a la sección de API Manager, damos click en nuestra API y copiamos el API ID de Autodiscovery, lo pagamos en la ventana de configuración de Autodiscovery en Anypoint Studio y seleccionamos el flujo de la API (main).
+
+![](discovery2.png)
+
+```markdown
+29. Hacemos deploy a CloudHub, y pegamos el Id de cliente y Cliente secreto
+(recuerda que estos datos los obtenemos dentro de Anypoint Platform -> API Manager -> info) 
+```
+![](clients.png)
+
+```markdown
+30. Hacemos deploy y esperamos hasta que tenga un status "Active"
+```
+
+![](deploy.png)
+
+```markdown
+31. Ya con estado "Active" vamos a la seccón de Policies y damos click.
+```
+![](active.png) 
+
+![](polices.png)
+
+```markdown
+32. Preisonamos el botón "Apply New Policy"
+```
+![](newpolice.png)
+
+```markdown
+33. seleciconamos Client ID enforcement y 1.0.0 y presionamos Aply.
+```
+![](select.png)
+
+```markdown
+34.  Nos aparecerá lo siguiete, lo dejamos asi como esta y damos Aply.
+```
+
+![](play.png) 
+
+```markdown
+35. Ahora Vamos a la sección de Exchange, seleccionamos nuestra API y se mostrará una pestaña como la siguiente, damos click en el botón señalado 
+```
+![](exchange5.png)
+
+Pediremos un acceso, seleccionamos la instancia y la aplicación, si no aparece la aplicación que queremos, presionamos crear nueva, y le asignamos el como nombre el nombre de nuestra API. Presionamos Request access.
+
+![](create3.png)
+
+```markdown
+Por lo que nos dará un acceso, nos dará también datos extra como un client_id y un client_secret hay que guardar estos datos.
+```
+![](access.png)
+
+```markdown
+36. Ahora podemos hacer peticiones, pero debemos tener los datos que se generaron en el paso anterior cliente (id y secret).
+```
+
+![](exc.png)
+
+Dentro de Exchange podemos hacer esta petición, damos click en /text -> POST y en la parte derecha podremos ver una sección para hacer peticiones: 
+
+![](pet1.png)
+
+Agregamos los datos client_id y client_secret en headers
+
+![](pet2.png)
+
+Agregamos un JSON con los datos de body. Y accedemos con nustra cuenta de Anypoint.
+
+Finalmente presionamos "Send" y obtendremos la respuesta. 
+
+![](pet3.png)
+
+¡Listo!
