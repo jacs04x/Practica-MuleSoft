@@ -534,3 +534,327 @@ regresaremos y veremos que el username ahora estará encriptado, presionamos "OK
 ya en el navegador, podremos observar que se actualizo!
 
 ![](act.png)
+
+# D) Crear una API en API Manager de Anypoint Platform.
+
+```markdown
+1. Ingresamos a Anypoint Platform desde este link
+
+https://anypoint.mulesoft.com/home/organizations/31352752-2086-43f9-8ce2-d191f56d13f2/
+```
+![](platform.png)
+
+Presionamos "Start designing"
+
+```markdown
+2. Presionamos Manage API 
+```
+![](api.png)
+
+```markdown
+3. Seleccionamos "Create new API"
+```
+![](new.png)    
+
+Podemos usar lo siguiente: 
+
+![](newapicreated.png)
+
+```markdown
+4. La API estará lista cuando aparezca la siguiente pestaña: 
+```
+
+![](api1.png)
+
+```markdown
+5. Ahora regresamos a Anypoint Studio y configuramos un nuevo tipo global, dando Click en Global Elements -> Create -> Component Configurations ->API Autodiscovery
+```
+
+![](globale.png) 
+
+```markdown
+6. Copiamos el id de Autodiscovery que fue generado cuando creamos la API en Anypoint Plantform.
+```
+
+![](id.png)
+
+```markdown
+7. Pegamos el id en el campo de API id, seleccionamos el flujoy presionamos "OK"
+```
+
+![](cid.png)
+
+```markdown
+8. Ahora regresemos a Anypoint Platform, en la parte de API Administration entremos a ver la información del entorno, dando click en el botón señalado.
+```
+
+![](info.png)
+
+```markdown
+9. Copiamos los datos señalados a continuanción:
+```
+
+![](se.png)
+
+y lo agregamos a las properties cuando hagamos el deploy a CloudHub, usando:
+
+```markdown
+
+* anypoint.platform.client_id
+* anypoint.platform.client_secret
+
+```
+
+![](prop2.png)
+
+Damos click en Deploy Application y esperamos a que el status cambie a Started, lo que significará que se desplego de manera correcta. ¡Listo!
+
+![](deployed2.png)
+
+# E) Mejores prácticas de diseño de APIS 
+
+```markdown
+Antes de empezar hay que tener varios conceptos muy claros.
+
+1. Métodos HTTP:
+Se Usan para hacer consultas a una API
+
+    * GET: Obtener datos
+    * POST : Guardar Datos
+    * PATCH : Actualizar parcialmente los datos de una instancia.
+    * PUT : Actualizar completamente la instancia.
+    * DELETE : Eliminar una instancia.
+    
+2. Códigos de estado:
+Se usan para dar información acerca del estado de la petición: 
+
+    1. Respuestas informativas (100–199),
+    2. Respuestas satisfactorias (200–299),
+    3. Redirecciones (300–399),
+    4. Errores de los clientes (400–499),
+    5. errores de los servidores (500–599).
+
+3. Parámetros de consulta:
+Se utilizan dentro de una consulta para usar o consultar uno o varios valores especificos.
+
+Su estructura es: 
+
+    * /users?fields=name
+    
+    Después de el signo de interrogación, se encuentran "variables" que tienen un valor.
+    Por ejemplo fields tiene a name como valor.
+    
+```
+
+```markdown
+1. Creamos una nueva API en Anypoint Platform usando Desing Center.
+Presionamos el botón @icon-plusCreate new
+```
+![](desing.png)
+
+```markdown
+2. Seleccionamos "New API Spec" 
+```
+![](spec.png)
+
+```markdown
+3. Ingresamos el nombre de la API y Presionamos Create API Spec
+```
+![](newapi2.png)
+
+```markdown
+4. Ahora veremos nuestro "directorio principal" con un archivo RAML 
+```
+
+![](spec2.png)
+
+```markdown
+5. Creamos un nuevo archivo, presionando el botón @icon-plus, con el nombre library.raml
+```
+![](newa.png)
+
+![](newa2.png) 
+
+y presionamos create.
+
+```markdown
+Ahora el archivo aparecerá con los demás.
+```
+
+![](newa3.png)
+
+```markdown
+6. Copiamos y pegamos el siguiente código dentro del archivo library.raml
+```
+
+```RAML
+#%RAML 1.0 Library
+usage:
+types:
+ Text: !include dataTypes/dataType.raml
+resourceTypes:
+ text:
+   post:
+     description: This API will send a secure text message with Twilio to the phone number you input
+     body: Text
+     responses:
+       200:
+         body: Text
+       400:
+       401:
+       500:
+
+```
+La variable *Text* hace referencia a la estructura que definimos dentro del archivo dataType.raml (SMS)
+
+La variable *text* hace referencia a el tipo de método HTTP que se usará para realizar una petición futura.
+
+dentro de *text* podemos observar que tenemos la sección para las respuestas (response) en donde tenemos varios códigos de estado, y solo regresaremos la estructura de SMS cuando tengamos un estado 200, es decir cuando la petición sea correcta, en otro caso, no haremos nada. 
+
+```markdown
+7. Ahora creamos un carpeta al que llamaremos dataTypes y dentro de esta carpeta crearemos un nuevo archivo que se llamará dataTypes.raml
+
+Agregaremos el siguiente código en el archivo dataTypes.raml
+```
+
+```markdown
+Este archivo define lo siguiente
+
+    * El número al que mandaremos un mensaje 
+    * El mensaje
+    
+También define la estructura y los tipos de cada "Objeto" y un pequeño ejemplo
+
+```
+
+```raml
+#%RAML 1.0 DataType
+properties:
+ ToPhoneNumber:
+   description: Enter the mobile number to send a text
+   example: 15553334444
+   type: integer
+   required: true
+ Message:
+   description: Enter your message
+   example: Text message body
+   type: string
+   required: true
+```
+
+una vez agregado el código, se mostrará una vista previa de lo que agregamos. 
+
+![](previa.png)
+
+```markdown
+8. Ahora regresamos al archivo raiz (een mi caso sendsmsapi100.raml)
+y escribimos lo siguiente: 
+```
+
+```raml
+mediaType: application/json
+uses:
+ library: library.raml
+/text:
+  type: library.text
+```
+Con este código hacemos referencia al archivo library.raml
+
+```raml
+uses:
+ library: library.raml
+```
+
+y con este otro código desde el archivo library.raml usamos los tipos de datos o la estructura de los datos desde el archivo dataType.raml
+
+```raml
+/text:
+  type: library.text
+```
+y /text lo podemos ver como un endpoint 
+
+
+```markdown
+Recapitulando
+
+* Definimos la estructura de un SMS, con destinatario y con un mensaje
+
+* Definimos la forma en como se enviarán los SMS (mediante un método POST, el cual fue definido en el archivo library.raml)
+
+* Definimos un endpoint usando la conexión entre el archivo library.raml y dataType.raml
+
+```
+![](endp.png)
+
+```markdown
+9. Definir un entorno seguro para realizar peticiones.
+
+Crearemos un archivo al que llamremos securityScheme.raml
+Copiamos y pegamos el siguiente código dentro del mismo.
+
+```
+
+```raml
+#%RAML 1.0 SecurityScheme
+type: Basic Authentication
+describedBy:
+ headers:
+   client_id:
+     type: string
+   client_secret:
+     type: string
+ responses:
+   401:
+     description: Unauthorized or invalid client application credentials
+   500:
+     description: Bad response from authorization server, or WSDL SOAP Fault error
+```
+
+Este código será de rgan ayuda ya que dentro de los header pediremos datos de seguridad como lo son el *id de cliente* y *cliente secreto* y sin esos datos no será posible obtener o modificar ningun dato de la API.
+
+```markown
+10. Ahora agregamos el siguiente código en nuestro archivo library.raml dentro de *usage* para incluir lo especificado en el archivo securityScheme.raml
+```
+![](usage.png)
+
+```markdown
+11. Abrimos nuestro archivo raiz y copiamos y pegamos el siguiente código justo debajo del titulo
+```
+![](usage1.png)
+
+Esto es de utilidad ya que así la API tendrá **Basic Authentication security** y por ende el usuario que haga una petición tendrá que agregar a los headers el client_id y el client_secret.
+
+```markdown 
+12. publicamos to exchange para poder manipular la API desde Anypoint Studio, hacemos click en el botón Publish y luego Publish to Exchange.
+```
+
+
+![](exchange.png)
+Agregamos los datos que se requieren, y presionamos Publish to Exchange.
+![](publish.png)
+Ahora ya esta publicado en Exchange.
+![](listo.png)
+
+Lo podemos verificar en la parte de Exchange @icon-check
+
+![](ex.png)
+
+```markdown 
+13. Ahora Abrimos Anypoint Studio para importar nuestra API.
+
+Necesitamos crear un nuevo proyecto para esto, cuando lo estemos creando nos movemos a la sección de import y presionamos el icono de @icon-plus,
+nos aparecerá una venta para agregar la dependencia.
+
+En el campo de busqueda ingresaremos el nombre de nuestra API que desplegamos en Exchange, presionamos Add y luego Finish.
+```
+
+![](import.png)
+
+Con lo siguiente sabremos que se importo correctamente: 
+
+![](corr.png)
+
+```markdown
+14. Bajamos y en el siguiente elemento agregaremos un Listener: 
+```
+![](agregar.png)
